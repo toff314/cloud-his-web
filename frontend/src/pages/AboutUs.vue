@@ -4,11 +4,11 @@
       <h2>公司简介</h2>
       <div class="intro-content">
         <div class="intro-text">
-          <p>公司简介文案... 我们是一家专注于医疗信息化解决方案的高科技企业，致力于通过创新技术改善医疗服务质量和效率。我们的团队由经验丰富的医疗专家和技术工程师组成，拥有多年的行业经验和深厚的技术积累。</p>
-          <p>我们坚持以患者为中心，以技术创新为驱动，不断研发和完善产品，为医疗机构提供高效、便捷、安全的信息化解决方案。我们的产品已在全国多家知名医院成功应用，获得了广泛好评。</p>
+          <p>公司简介文案... 我们致力于为医疗机构提供先进的信息化解决方案，通过技术创新推动医疗服务的发展。我们的团队由经验丰富的医疗行业专家和技术精英组成，专注于开发适合中国医疗环境的软件产品。</p>
+          <p>多年来，我们已成功为数百家医疗机构提供了优质的服务，帮助他们提高了工作效率，改善了患者就医体验。未来，我们将继续秉承创新精神，为医疗行业的数字化转型贡献力量。</p>
         </div>
         <div class="intro-image">
-          <img src="../assets/images/company-image.jpg" alt="公司形象图" />
+          <img src="../assets/images/company.jpg" alt="公司图片" />
         </div>
       </div>
     </section>
@@ -16,24 +16,47 @@
     <section class="honors">
       <h2>荣誉资质</h2>
       <div class="certificates">
-        <div class="certificate-card" v-for="(cert, index) in certificates" :key="index">
-          <div class="cert-image">
-            <img :src="cert.image" :alt="cert.name" />
+        <div class="certificate-item">
+          <div class="certificate-image">
+            <img src="../assets/images/certificate-1.jpg" alt="证书图片" />
           </div>
-          <h3>{{ cert.name }}</h3>
+          <p>社区医院多源处方智能审方与尚配协同方法及系统</p>
+        </div>
+        <div class="certificate-item">
+          <div class="certificate-image">
+            <img src="../assets/images/certificate-2.jpg" alt="证书图片" />
+          </div>
+          <p>社区医院多源处方智能审方与尚配协同方法及系统</p>
+        </div>
+        <div class="certificate-item">
+          <div class="certificate-image">
+            <img src="../assets/images/certificate-3.jpg" alt="证书图片" />
+          </div>
+          <p>兴邦智慧云药房库存智能预警系统</p>
+        </div>
+        <div class="certificate-item">
+          <div class="certificate-image">
+            <img src="../assets/images/certificate-4.jpg" alt="证书图片" />
+          </div>
+          <p>软著证书二</p>
         </div>
       </div>
     </section>
 
     <section class="vision">
       <h2>公司愿景</h2>
-      <div class="vision-cards">
-        <div class="vision-card" v-for="(item, index) in visionItems" :key="index">
-          <div class="vision-icon">
-            <img :src="item.icon" :alt="item.title" />
-          </div>
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.description }}</p>
+      <div class="vision-items">
+        <div class="vision-item">
+          <img src="../assets/images/service-excellence.jpg" alt="服务至上" />
+          <h3>服务至上</h3>
+        </div>
+        <div class="vision-item">
+          <img src="../assets/images/tcm-heritage.jpg" alt="中医文化传承" />
+          <h3>中医文化传承</h3>
+        </div>
+        <div class="vision-item">
+          <img src="../assets/images/efficiency.jpg" alt="提升门诊效率" />
+          <h3>提升门诊效率</h3>
         </div>
       </div>
     </section>
@@ -42,91 +65,37 @@
 
 <script>
 export default {
-  name: 'AboutUs',
-  data() {
-    return {
-      certificates: [
-        {
-          image: '../assets/images/cert1.jpg',
-          name: '社区医院多源处方智能审方与尚配协同方法及系统'
-        },
-        {
-          image: '../assets/images/cert2.jpg',
-          name: '社区医院多源处方智能审方与尚配协同方法及系统'
-        },
-        {
-          image: '../assets/images/cert3.jpg',
-          name: '兴邦智慧云药房库存智能预警系统'
-        },
-        {
-          image: '../assets/images/cert4.jpg',
-          name: '软著证书二'
-        }
-      ],
-      visionItems: [
-        {
-          icon: '../assets/images/vision1.png',
-          title: '服务至上',
-          description: '始终以客户需求为导向，提供优质的产品和服务'
-        },
-        {
-          icon: '../assets/images/vision2.png',
-          title: '中医文化传承',
-          description: '结合传统中医理念与现代科技，推动中医药事业发展'
-        },
-        {
-          icon: '../assets/images/vision3.png',
-          title: '提升门诊效率',
-          description: '通过智能化手段，显著提升门诊工作效率'
-        }
-      ]
-    };
-  }
+  name: 'AboutUs'
 };
 </script>
 
 <style scoped>
 .about-us {
-  padding: 2rem 1rem;
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.company-intro,
-.honors,
-.vision {
+.company-intro, .honors, .vision {
   margin-bottom: 3rem;
-  padding: 2rem 0;
-}
-
-.company-intro h2,
-.honors h2,
-.vision h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  color: #2c3e50;
 }
 
 .intro-content {
   display: flex;
   gap: 2rem;
-  align-items: center;
+  margin-top: 1.5rem;
 }
 
 .intro-text {
-  flex: 1;
+  flex: 2;
   line-height: 1.8;
-  color: #333;
-}
-
-.intro-text p {
-  margin-bottom: 1rem;
 }
 
 .intro-image {
   flex: 1;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .intro-image img {
@@ -138,86 +107,53 @@ export default {
 
 .certificates {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
+  margin-top: 1.5rem;
 }
 
-.certificate-card {
+.certificate-item {
   text-align: center;
-  padding: 1rem;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.certificate-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-}
-
-.cert-image {
-  width: 120px;
-  height: 120px;
+.certificate-image {
+  width: 150px;
+  height: 150px;
   margin: 0 auto 1rem;
+  border-radius: 8px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #f8f9fa;
 }
 
-.cert-image img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+.certificate-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.certificate-card h3 {
-  margin: 0.5rem 0 0;
-  font-size: 1rem;
-  color: #2c3e50;
-}
-
-.vision-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.vision-card {
-  text-align: center;
-  padding: 1.5rem;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.vision-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-}
-
-.vision-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1rem;
+.vision-items {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-around;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
 }
 
-.vision-icon img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+.vision-item {
+  text-align: center;
+  width: 25%;
+  min-width: 200px;
 }
 
-.vision-card h3 {
-  margin: 0.5rem 0;
-  color: #2c3e50;
-}
-
-.vision-card p {
-  color: #666;
-  line-height: 1.6;
+.vision-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 @media (max-width: 768px) {
@@ -225,9 +161,18 @@ export default {
     flex-direction: column;
   }
   
-  .certificates,
-  .vision-cards {
-    grid-template-columns: 1fr;
+  .certificates {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .vision-items {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .vision-item {
+    width: 100%;
+    margin-bottom: 2rem;
   }
 }
 </style>

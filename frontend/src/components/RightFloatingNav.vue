@@ -1,28 +1,38 @@
 <template>
-  <div class="right-floating-nav">
-    <div class="nav-item" @click="callPhone">
-      <div class="icon">📞</div>
-      <div class="tooltip">联系电话</div>
+  <div class="floating-nav">
+    <div class="floating-btn" @click="showPhoneModal = true">
+      <span class="btn-icon">📞</span>
+      <span class="btn-text">联系电话</span>
     </div>
-    <div class="nav-item" @click="showWechatModal">
-      <div class="icon">💬</div>
-      <div class="tooltip">客服微信</div>
+    <div class="floating-btn" @click="showWechatModal = true">
+      <span class="btn-icon">💬</span>
+      <span class="btn-text">客服微信</span>
     </div>
-    <div class="nav-item" @click="goToFreeTrial">
-      <div class="icon">🆓</div>
-      <div class="tooltip">免费试用</div>
+    <div class="floating-btn" @click="goToFreeTrial">
+      <span class="btn-icon">🆓</span>
+      <span class="btn-text">免费试用</span>
     </div>
-    <div class="nav-item" @click="login">
-      <div class="icon">👤</div>
-      <div class="tooltip">立即登录</div>
+    <div class="floating-btn" @click="goToLogin">
+      <span class="btn-icon">🔒</span>
+      <span class="btn-text">立即登录</span>
     </div>
-    
-    <!-- WeChat Modal -->
-    <div v-if="showWechat" class="modal" @click="closeWechatModal">
+
+    <!-- Phone Modal -->
+    <div v-if="showPhoneModal" class="modal-overlay" @click="closeModals">
       <div class="modal-content" @click.stop>
-        <span class="close" @click="closeWechatModal">&times;</span>
-        <h3>扫描二维码添加客服微信</h3>
-        <img src="../assets/images/wechat-qr-code.png" alt="客服微信二维码" />
+        <h3>联系电话</h3>
+        <p>400-123-4567</p>
+        <button @click="closeModals" class="close-btn">关闭</button>
+      </div>
+    </div>
+
+    <!-- WeChat Modal -->
+    <div v-if="showWechatModal" class="modal-overlay" @click="closeModals">
+      <div class="modal-content" @click.stop>
+        <h3>客服微信</h3>
+        <img src="../assets/images/wechat-qr-service.jpg" alt="客服微信二维码" class="qr-code" />
+        <p>扫描二维码添加客服微信</p>
+        <button @click="closeModals" class="close-btn">关闭</button>
       </div>
     </div>
   </div>
@@ -33,125 +43,128 @@ export default {
   name: 'RightFloatingNav',
   data() {
     return {
-      showWechat: false
+      showPhoneModal: false,
+      showWechatModal: false
     };
   },
   methods: {
-    callPhone() {
-      // 实际应用中可以打开拨号界面或显示电话号码
-      alert('联系电话: 400-123-4567');
-    },
-    showWechatModal() {
-      this.showWechat = true;
-    },
-    closeWechatModal() {
-      this.showWechat = false;
-    },
     goToFreeTrial() {
       this.$router.push('/free-trial');
     },
-    login() {
-      // 实际应用中可以跳转到登录页面或打开登录模态框
+    goToLogin() {
+      // Redirect to login page or trigger login modal
       alert('跳转到登录页面');
+    },
+    closeModals() {
+      this.showPhoneModal = false;
+      this.showWechatModal = false;
     }
   }
 };
 </script>
 
 <style scoped>
-.right-floating-nav {
+.floating-nav {
   position: fixed;
   right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1000;
+  bottom: 20px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 10px;
+  z-index: 1000;
 }
 
-.nav-item {
+.floating-btn {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #42b983;
+  background-color: #3498db;
+  color: white;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 1.5rem;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  position: relative;
   transition: all 0.3s ease;
+  position: relative;
 }
 
-.nav-item:hover {
+.floating-btn:hover {
   transform: scale(1.1);
-  background-color: #359c6d;
+  background-color: #2980b9;
 }
 
-.tooltip {
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.btn-text {
+  font-size: 0.6rem;
+  display: none;
+}
+
+.floating-btn:hover .btn-text {
+  display: block;
   position: absolute;
-  right: 60px;
+  left: -80px;
   top: 50%;
   transform: translateY(-50%);
   background-color: #333;
   color: white;
-  padding: 0.5rem;
+  padding: 5px 10px;
   border-radius: 4px;
   white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s;
-  font-size: 0.8rem;
 }
 
-.nav-item:hover .tooltip {
-  opacity: 1;
-  visibility: visible;
-}
-
-.modal {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
+  align-items: center;
+  z-index: 1001;
 }
 
 .modal-content {
   background-color: white;
-  padding: 2rem;
+  padding: 20px;
   border-radius: 8px;
   text-align: center;
-  position: relative;
   max-width: 300px;
   width: 90%;
 }
 
-.close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.5rem;
+.qr-code {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  margin: 10px auto;
+}
+
+.close-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.modal-content img {
-  width: 100%;
-  max-width: 200px;
-  margin-top: 1rem;
-}
-
 @media (max-width: 768px) {
-  .right-floating-nav {
-    display: none;
+  .floating-nav {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .floating-btn {
+    width: 45px;
+    height: 45px;
   }
 }
 </style>

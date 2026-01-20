@@ -7,6 +7,10 @@ const DatabaseInitializer = require('./services/sqlite-initializer.service');
 // Import routes
 const contentRoutes = require('./routes/content.route');
 const metadataRoutes = require('./routes/metadata.route');
+const imageAssetsRoutes = require('./routes/image-assets.route');
+const carouselRoutes = require('./routes/carousel.route');
+const aboutRoutes = require('./routes/about.route');
+const trialRequestRoutes = require('./routes/trial-request.route');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +40,10 @@ initializeDatabase().then(() => {
   // Routes
   app.use('/api/v1/content', contentRoutes);
   app.use('/api/v1/metadata', metadataRoutes);
+  app.use('/api/v1/images', imageAssetsRoutes);
+  app.use('/api/v1/carousel', carouselRoutes);
+  app.use('/api/v1/about', aboutRoutes);
+  app.use('/api/v1/trials', trialRequestRoutes);
 
   // Health check endpoint
   app.get('/health', (req, res) => {

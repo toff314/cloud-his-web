@@ -1,155 +1,69 @@
 const express = require('express');
 const router = express.Router();
-const ImageAssetService = require('../services/image-asset.service');
+const imageAssetService = require('../services/image-asset.service');
 
-const imageAssetService = new ImageAssetService();
-
-// GET /api/v1/images - Retrieve image assets with optional filters
+// Get all image assets
 router.get('/', async (req, res) => {
   try {
-    const { limit = 10, offset = 0, filename } = req.query;
-    
-    // Apply filters
-    const filters = {};
-    if (filename) {
-      filters.filename = filename;
-    }
-    
-    const imageAssets = await imageAssetService.getAllImageAssets(parseInt(limit), parseInt(offset));
-    
-    res.json({ 
-      success: true, 
-      data: imageAssets,
-      pagination: {
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-        total: imageAssets.length // This is simplified; in practice, you'd have a separate count query
-      }
-    });
+    const assets = await imageAssetService.getAllImageAssets();
+    res.json(assets);
   } catch (error) {
-    console.error('Error retrieving image assets:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: { code: 'DATABASE_ERROR', message: error.message } 
-    });
+    console.error('Error fetching all image assets:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// GET /api/v1/images/:id - Retrieve specific image asset by ID
+// Get image asset by ID
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    const asset = await imageAssetService.getImageAssetById(id);
     
-    const imageAsset = await imageAssetService.getImageAssetById(parseInt(id));
-    if (!imageAsset) {
-      return res.status(404).json({ 
-        success: false, 
-        error: { code: 'IMAGE_ASSET_NOT_FOUND', message: 'Image asset not found' } 
-      });
+    if (!asset) {
+      return res.status(404).json({ error: 'Image asset not found' });
     }
     
-    res.json({ 
-      success: true, 
-      data: imageAsset 
-    });
+    res.json(asset);
   } catch (error) {
-    console.error('Error retrieving image asset by ID:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: { code: 'DATABASE_ERROR', message: error.message } 
-    });
+    console.error(`Error fetching image asset with ID ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// POST /api/v1/images - Create new image asset (requires authentication in real implementation)
+// Create new image asset
 router.post('/', async (req, res) => {
   try {
     const imageData = req.body;
-    
-    // In a real implementation, you would have authentication here
-    // For now, we'll allow anyone to create image assets
-    
     const result = await imageAssetService.createImageAsset(imageData);
-    
-    res.status(201).json({ 
-      success: true, 
-      data: result 
-    });
+    res.status(201).json(result);
   } catch (error) {
     console.error('Error creating image asset:', error);
-    if (error.message.includes('already exists')) {
-      return res.status(409).json({ 
-        success: false, 
-        error: { code: 'FILEPATH_CONFLICT', message: error.message } 
-      });
-    }
-    res.status(500).json({ 
-      success: false, 
-      error: { code: 'DATABASE_ERROR', message: error.message } 
-    });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// PUT /api/v1/images/:id - Update image asset by ID (requires authentication in real implementation)
+// Update image asset
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const imageData = req.body;
-    
-    // In a real implementation, you would have authentication here
-    const result = await imageAssetService.updateImageAsset(parseInt(id), imageData);
-    
-    if (result.changes === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        error: { code: 'IMAGE_ASSET_NOT_FOUND', message: 'Image asset not found' } 
-      });
-    }
-    
-    res.json({ 
-      success: true, 
-      data: { id: parseInt(id), ...imageData } 
-    });
+    const result = await imageAssetService.updateImageAsset(id, imageData);
+    res.json(result);
   } catch (error) {
-    console.error('Error updating image asset:', error);
-    if (error.message.includes('already exists')) {
-      return res.status(409).json({ 
-        success: false, 
-        error: { code: 'FILEPATH_CONFLICT', message: error.message } 
-      });
-    }
-    res.status(500).json({ 
-      success: false, 
-      error: { code: 'DATABASE_ERROR', message: error.message } 
-    });
+    console.error(`Error updating image asset with ID ${id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// DELETE /api/v1/images/:id - Delete image asset by ID (requires authentication in real implementation)
+// Delete image asset
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
-    // In a real implementation, you would have authentication here
-    const result = await imageAssetService.deleteImageAsset(parseInt(id));
-    
-    if (result.changes === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        error: { code: 'IMAGE_ASSET_NOT_FOUND', message: 'Image asset not found' } 
-      });
-    }
-    
-    res.json({ 
-      success: true, 
-      message: 'Image asset deleted successfully' 
-    });
+    const result = await imageAssetService.deleteImageAsset(id);
+    res.json(result);
   } catch (error) {
-    console.error('Error deleting image asset:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: { code: 'DATABASE_ERROR', message: error.message } 
-    });
+    console.error(`Error deleting image asset with ID ${id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

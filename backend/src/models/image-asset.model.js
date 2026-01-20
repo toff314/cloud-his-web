@@ -1,108 +1,70 @@
-// ImageAsset model
+const { dbPath } = require('../config/database.config');
 const sqlite3 = require('sqlite3').verbose();
 
 class ImageAsset {
-  constructor(dbPath) {
+  constructor() {
     this.db = new sqlite3.Database(dbPath);
   }
 
-  // Create a new image asset
-  create(imageData) {
-    return new Promise((resolve, reject) => {
-      const { filename, filepath, alt_text, caption, file_size, mime_type } = imageData;
-      const query = `
-        INSERT INTO image_assets 
-        (filename, filepath, alt_text, caption, file_size, mime_type) 
-        VALUES (?, ?, ?, ?, ?, ?)
-      `;
-      const params = [filename, filepath, alt_text, caption, file_size, mime_type];
-      
-      this.db.run(query, params, function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ id: this.lastID });
-        }
-      });
-    });
+  // Get all image assets
+  getAll(callback) {
+    const sql = `SELECT * FROM image_assets ORDER BY created_at DESC`;
+    this.db.all(sql, [], callback);
   }
 
   // Get image asset by ID
-  getById(id) {
-    return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM image_assets WHERE id = ?';
-      this.db.get(query, [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+  getById(id, callback) {
+    const sql = `SELECT * FROM image_assets WHERE id = ?`;
+    this.db.get(sql, [id], callback);
   }
 
-  // Get image asset by filepath
-  getByFilepath(filepath) {
-    return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM image_assets WHERE filepath = ?';
-      this.db.get(query, [filepath], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+  // Get image asset by filename
+  getByFilename(filename, callback) {
+    const sql = `SELECT * FROM image_assets WHERE filename = ?`;
+    this.db.get(sql, [filename], callback);
   }
 
-  // Get all image assets with pagination
-  getAll(limit = 10, offset = 0) {
-    return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM image_assets ORDER BY created_at DESC LIMIT ? OFFSET ?';
-      this.db.all(query, [limit, offset], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
+  // Create new image asset
+  create(imageAsset, callback) {
+    const sql = `INSERT INTO image_assets (filename, filepath, alt_text, caption, file_size, mime_type) VALUES (?, ?, ?, ?, ?, ?)`;
+    const params = [
+      imageAsset.filename,
+      imageAsset.filepath,
+      imageAsset.altText,
+      imageAsset.caption,
+      imageAsset.fileSize,
+      imageAsset.mimeType
+    ];
+    this.db.run(sql, params, function(err) {
+      callback(err, this ? this.lastID : null);
     });
   }
 
   // Update image asset
-  update(id, imageData) {
-    return new Promise((resolve, reject) => {
-      const { filename, filepath, alt_text, caption, file_size, mime_type } = imageData;
-      const query = `
-        UPDATE image_assets 
-        SET filename = ?, filepath = ?, alt_text = ?, caption = ?, 
-            file_size = ?, mime_type = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `;
-      const params = [filename, filepath, alt_text, caption, file_size, mime_type, id];
-      
-      this.db.run(query, params, function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ changes: this.changes });
-        }
-      });
+  update(id, imageAsset, callback) {
+    const sql = `UPDATE image_assets SET filename = ?, filepath = ?, alt_text = ?, caption = ?, file_size = ?, mime_type = ? WHERE id = ?`;
+    const params = [
+      imageAsset.filename,
+      imageAsset.filepath,
+      imageAsset.altText,
+      imageAsset.caption,
+      imageAsset.fileSize,
+      imageAsset.mimeType,
+      id
+    ];
+    this.db.run(sql, params, function(err) {
+      callback(err);
     });
   }
 
   // Delete image asset
-  delete(id) {
-    return new Promise((resolve, reject) => {
-      const query = 'DELETE FROM image_assets WHERE id = ?';
-      this.db.run(query, [id], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ changes: this.changes });
-        }
-      });
-    });
+  delete(id, callback) {
+    const sql = `DELETE FROM image_assets WHERE id = ?`;
+    this.db.run(sql, [id], callback);
+  }
+
+  close() {
+    this.db.close();
   }
 }
 

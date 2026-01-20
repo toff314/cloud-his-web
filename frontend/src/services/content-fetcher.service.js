@@ -1,42 +1,42 @@
-import apiService from './api.service';
+import api from './api.service';
 
-export const contentFetcherService = {
-  async getContent(params = {}) {
+export default {
+  async fetchContentBySlug(slug) {
     try {
-      const response = await apiService.get('/content', { params });
+      const response = await api.getContent(slug);
       return response.data;
     } catch (error) {
-      console.error('Error fetching content:', error);
+      console.error(`Error fetching content for slug ${slug}:`, error);
       throw error;
     }
   },
 
-  async getContentBySlug(slug) {
+  async fetchAllContent() {
     try {
-      const response = await apiService.get(`/content/${slug}`);
+      const response = await api.getAllContent();
       return response.data;
     } catch (error) {
-      console.error(`Error fetching content with slug ${slug}:`, error);
+      console.error('Error fetching all content:', error);
       throw error;
     }
   },
 
-  async getMetadata(params = {}) {
+  async fetchMetadataByPage(pageSlug) {
     try {
-      const response = await apiService.get('/metadata', { params });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching metadata:', error);
-      throw error;
-    }
-  },
-
-  async getMetadataByPageSlug(pageSlug) {
-    try {
-      const response = await apiService.get(`/metadata/${pageSlug}`);
+      const response = await api.getMetadata(pageSlug);
       return response.data;
     } catch (error) {
       console.error(`Error fetching metadata for page ${pageSlug}:`, error);
+      throw error;
+    }
+  },
+
+  async fetchAllMetadata() {
+    try {
+      const response = await api.getAllMetadata();
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all metadata:', error);
       throw error;
     }
   }

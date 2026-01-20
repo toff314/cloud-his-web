@@ -1,6 +1,6 @@
 <template>
   <div class="free-trial">
-    <div class="layout-container">
+    <div class="trial-container">
       <div class="form-section">
         <h2>免费试用申请</h2>
         <p>请填写以下信息，开启智慧云门诊体验</p>
@@ -11,29 +11,29 @@
             <input 
               type="tel" 
               id="phone" 
-              v-model="form.phone" 
+              v-model="formData.phone" 
               required 
-              placeholder="请输入手机号"
+              placeholder="请输入您的手机号"
             />
           </div>
           
           <div class="form-group">
             <label for="verification">验证码 *</label>
-            <div class="input-with-button">
+            <div class="verification-input">
               <input 
                 type="text" 
                 id="verification" 
-                v-model="form.verification" 
+                v-model="formData.verification" 
                 required 
                 placeholder="请输入验证码"
               />
               <button 
                 type="button" 
                 class="verification-btn" 
-                :disabled="verificationDisabled"
+                :disabled="countdown > 0"
                 @click="sendVerificationCode"
               >
-                {{ verificationBtnText }}
+                {{ countdown > 0 ? `${countdown}秒后重发` : '获取验证码' }}
               </button>
             </div>
           </div>
@@ -43,7 +43,7 @@
             <input 
               type="text" 
               id="clinicName" 
-              v-model="form.clinicName" 
+              v-model="formData.clinicName" 
               required 
               placeholder="请输入诊所名称"
             />
@@ -54,7 +54,7 @@
             <input 
               type="text" 
               id="contactPerson" 
-              v-model="form.contactPerson" 
+              v-model="formData.contactPerson" 
               required 
               placeholder="请输入联系人姓名"
             />
@@ -65,19 +65,23 @@
             <input 
               type="text" 
               id="invitationCode" 
-              v-model="form.invitationCode" 
+              v-model="formData.invitationCode" 
               placeholder="请输入邀请码"
             />
           </div>
           
-          <button type="submit" class="submit-btn">提交申请</button>
+          <button type="submit" class="submit-btn" :disabled="isSubmitting">
+            {{ isSubmitting ? '提交中...' : '提交申请' }}
+          </button>
         </form>
         
-        <p class="privacy-statement">患者至上 放心提问，我们承诺100%尊重患者，保护患者隐私</p>
+        <p class="privacy-statement">
+          患者至上 放心提问，我们承诺100%尊重患者，保护患者隐私
+        </p>
       </div>
       
       <div class="illustration-section">
-        <img src="../assets/images/medical-scene.jpg" alt="医疗场景插画" />
+        <img src="../assets/images/medical-illustration.jpg" alt="医疗场景插画" />
       </div>
     </div>
   </div>
@@ -88,99 +92,53 @@ export default {
   name: 'FreeTrial',
   data() {
     return {
-      form: {
+      formData: {
         phone: '',
         verification: '',
         clinicName: '',
         contactPerson: '',
         invitationCode: ''
       },
-      verificationDisabled: false,
-      verificationCountdown: 60,
-      verificationBtnText: '获取验证码'
+      countdown: 0,
+      isSubmitting: false
     };
   },
   methods: {
     sendVerificationCode() {
-      // 验证手机号格式
-      const phoneRegex = /^1[3-9]\d{9}$/;
-      if (!phoneRegex.test(this.form.phone)) {
-        alert('请输入正确的手机号格式');
-        return;
-      }
-
-      // 模拟发送验证码
-      console.log('发送验证码到:', this.form.phone);
-      alert('验证码已发送至您的手机，请注意查收');
-      
-      // 启动倒计时
-      this.verificationDisabled = true;
-      this.verificationBtnText = `${this.verificationCountdown}秒后重试`;
-      
-      const countdownInterval = setInterval(() => {
-        this.verificationCountdown--;
-        this.verificationBtnText = `${this.verificationCountdown}秒后重试`;
-        
-        if (this.verificationCountdown <= 0) {
-          clearInterval(countdownInterval);
-          this.verificationDisabled = false;
-          this.verificationBtnText = '重新获取';
-          this.verificationCountdown = 60;
+      // In a real app, this would send an SMS
+      console.log('Sending verification code to:', this.formData.phone);
+      this.countdown = 60;
+      const timer = setInterval(() => {
+        this.countdown--;
+        if (this.countdown <= 0) {
+          clearInterval(timer);
         }
       }, 1000);
     },
     async submitForm() {
-      // 表单验证
-      if (!this.validateForm()) {
-        return;
-      }
-
-      // 模拟提交表单
+      this.isSubmitting = true;
+      
+      // Simulate API call
       try {
-        console.log('提交试用申请:', this.form);
-        alert('试用申请提交成功！我们的工作人员将尽快与您联系。');
-        
-        // 重置表单
-        this.form = {
-          phone: '',
-          verification: '',
-          clinicName: '',
-          contactPerson: '',
-          invitationCode: ''
-        };
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log('Form submitted:', this.formData);
+        alert('申请提交成功！我们的工作人员将尽快与您联系。');
+        this.resetForm();
       } catch (error) {
-        console.error('提交失败:', error);
-        alert('提交失败，请稍后重试');
+        console.error('Submission error:', error);
+        alert('提交失败，请稍后重试。');
+      } finally {
+        this.isSubmitting = false;
       }
     },
-    validateForm() {
-      if (!this.form.phone) {
-        alert('请输入手机号');
-        return false;
-      }
-
-      const phoneRegex = /^1[3-9]\d{9}$/;
-      if (!phoneRegex.test(this.form.phone)) {
-        alert('请输入正确的手机号格式');
-        return false;
-      }
-
-      if (!this.form.verification) {
-        alert('请输入验证码');
-        return false;
-      }
-
-      if (!this.form.clinicName) {
-        alert('请输入诊所名');
-        return false;
-      }
-
-      if (!this.form.contactPerson) {
-        alert('请输入联系人');
-        return false;
-      }
-
-      return true;
+    resetForm() {
+      this.formData = {
+        phone: '',
+        verification: '',
+        clinicName: '',
+        contactPerson: '',
+        invitationCode: ''
+      };
     }
   }
 };
@@ -188,38 +146,29 @@ export default {
 
 <style scoped>
 .free-trial {
-  padding: 2rem 1rem;
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.layout-container {
+.trial-container {
   display: flex;
-  gap: 3rem;
+  gap: 2rem;
   align-items: flex-start;
 }
 
 .form-section {
   flex: 1;
-  min-width: 400px;
+  max-width: 500px;
 }
 
 .form-section h2 {
-  font-size: 2rem;
+  margin-top: 0;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
-}
-
-.form-section p {
-  color: #666;
-  margin-bottom: 2rem;
 }
 
 .trial-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
 }
 
 .form-group {
@@ -230,18 +179,7 @@ export default {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-  color: #2c3e50;
-}
-
-.form-group label:after {
-  content: "*";
-  color: red;
-  margin-left: 0.25rem;
-}
-
-.form-group label:not(:has(input[required])):after {
-  content: "";
-  margin-left: 0;
+  color: #34495e;
 }
 
 .form-group input {
@@ -250,69 +188,65 @@ export default {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #42b983;
-}
-
-.input-with-button {
+.verification-input {
   display: flex;
   gap: 0.5rem;
 }
 
+.verification-input input {
+  flex: 1;
+}
+
 .verification-btn {
-  background-color: #42b983;
+  padding: 0.75rem 1rem;
+  background-color: #3498db;
   color: white;
   border: none;
-  padding: 0.75rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.3s;
   white-space: nowrap;
 }
 
-.verification-btn:hover:not(:disabled) {
-  background-color: #359c6d;
-}
-
 .verification-btn:disabled {
-  background-color: #ccc;
+  background-color: #bdc3c7;
   cursor: not-allowed;
 }
 
 .submit-btn {
   width: 100%;
-  background-color: #3498db;
+  padding: 1rem;
+  background-color: #2ecc71;
   color: white;
   border: none;
-  padding: 1rem;
   border-radius: 4px;
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-.submit-btn:hover {
-  background-color: #2980b9;
+.submit-btn:hover:not(:disabled) {
+  background-color: #27ae60;
+}
+
+.submit-btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
 }
 
 .privacy-statement {
   margin-top: 1.5rem;
   padding: 1rem;
-  background-color: #e8f4fc;
+  background-color: #f8f9fa;
   border-left: 4px solid #3498db;
   font-size: 0.9rem;
-  color: #2c3e50;
-  text-align: center;
+  color: #7f8c8d;
 }
 
 .illustration-section {
   flex: 1;
-  min-width: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -326,18 +260,13 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .layout-container {
+  .trial-container {
     flex-direction: column;
   }
   
-  .form-section,
   .illustration-section {
-    min-width: 100%;
-  }
-  
-  .illustration-section img {
-    max-height: 300px;
-    object-fit: contain;
+    order: -1; /* Move illustration above form on mobile */
+    margin-bottom: 2rem;
   }
 }
 </style>

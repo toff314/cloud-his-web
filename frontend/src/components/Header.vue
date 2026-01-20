@@ -1,46 +1,76 @@
 <template>
   <header class="header">
-    <nav class="navbar">
-      <div class="nav-left">
-        <div class="logo">智慧云门诊</div>
+    <div class="header-container">
+      <!-- Left: Logo -->
+      <div class="logo-section">
+        <h1 class="logo">智慧云门诊</h1>
       </div>
-      <div class="nav-center">
-        <ul class="nav-menu">
+
+      <!-- Middle: Navigation Menu -->
+      <nav class="navigation-menu">
+        <ul class="nav-list">
           <li class="nav-item">
-            <router-link to="/" class="nav-link" active-class="active">首页</router-link>
+            <router-link to="/" :class="{ active: isActiveRoute('/') }">首页</router-link>
           </li>
           <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle">产品介绍</a>
-            <ul class="dropdown-menu">
-              <li><router-link to="/product-introduction" class="dropdown-item">智慧云药房</router-link></li>
-              <li><router-link to="/product-introduction" class="dropdown-item">智慧云门诊</router-link></li>
-              <li><router-link to="/product-introduction" class="dropdown-item">社区医院统管平台</router-link></li>
-              <li><router-link to="/product-introduction" class="dropdown-item">互联网医院</router-link></li>
+            <a href="#" @click.prevent="toggleDropdown" :class="{ active: isActiveRoute('/product-introduction') }">
+              产品介绍
+              <span class="dropdown-arrow">▼</span>
+            </a>
+            <ul v-if="showDropdown" class="dropdown-menu">
+              <li><router-link to="/product-introduction#smart-pharmacy">智慧云药房</router-link></li>
+              <li><router-link to="/product-introduction#smart-outpatient">智慧云门诊</router-link></li>
+              <li><router-link to="/product-introduction#community-platform">社区医院统管平台</router-link></li>
+              <li><router-link to="/product-introduction#internet-hospital">互联网医院</router-link></li>
             </ul>
           </li>
           <li class="nav-item">
-            <router-link to="/solutions" class="nav-link" active-class="active">解决方案</router-link>
+            <router-link to="/solutions" :class="{ active: isActiveRoute('/solutions') }">解决方案</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/customer-cases" class="nav-link" active-class="active">客户案例</router-link>
+            <router-link to="/customer-cases" :class="{ active: isActiveRoute('/customer-cases') }">客户案例</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/about-us" class="nav-link" active-class="active">关于我们</router-link>
+            <router-link to="/about-us" :class="{ active: isActiveRoute('/about-us') }">关于我们</router-link>
           </li>
         </ul>
+      </nav>
+
+      <!-- Right: Action Area -->
+      <div class="action-area">
+        <button class="btn btn-outline">免费试用</button>
+        <button class="btn btn-outline">版本套餐</button>
+        <button class="btn btn-gray">登录</button>
       </div>
-      <div class="nav-right">
-        <button class="btn btn-trial">免费试用</button>
-        <button class="btn btn-pricing">版本套餐</button>
-        <button class="btn btn-login">登录</button>
-      </div>
-    </nav>
+    </div>
   </header>
 </template>
 
 <script>
 export default {
-  name: 'Header'
+  name: 'Header',
+  data() {
+    return {
+      showDropdown: false
+    };
+  },
+  methods: {
+    toggleDropdown(event) {
+      event.preventDefault();
+      this.showDropdown = !this.showDropdown;
+    },
+    isActiveRoute(route) {
+      return this.$route.path === route;
+    }
+  },
+  mounted() {
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!this.$el.contains(event.target)) {
+        this.showDropdown = false;
+      }
+    });
+  }
 };
 </script>
 
@@ -48,35 +78,43 @@ export default {
 .header {
   position: fixed;
   top: 0;
-  left: 0;
   width: 100%;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 1000;
-  padding: 0.5rem 0;
 }
 
-.navbar {
+.header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+}
+
+.logo-section {
+  flex: 1;
 }
 
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: #2c3e50;
+  margin: 0;
 }
 
-.nav-menu {
+.navigation-menu {
+  flex: 2;
+  text-align: center;
+}
+
+.nav-list {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
-  align-items: center;
+  justify-content: center;
 }
 
 .nav-item {
@@ -84,7 +122,7 @@ export default {
   margin: 0 1rem;
 }
 
-.nav-link {
+.nav-item a {
   text-decoration: none;
   color: #333;
   padding: 0.5rem 1rem;
@@ -92,63 +130,108 @@ export default {
   transition: background-color 0.3s;
 }
 
-.nav-link:hover,
-.nav-link.active {
-  background-color: #f0f0f0;
+.nav-item a:hover,
+.nav-item a.active {
+  background-color: #f0f8ff;
+  color: #3498db;
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  margin-left: 0.3rem;
 }
 
 .dropdown-menu {
-  display: none;
   position: absolute;
   top: 100%;
   left: 0;
   background: white;
-  min-width: 200px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border: 1px solid #ddd;
   border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   list-style: none;
   padding: 0.5rem 0;
+  min-width: 160px;
   z-index: 1001;
 }
 
-.dropdown:hover .dropdown-menu {
-  display: block;
+.dropdown-menu li {
+  margin: 0;
 }
 
-.dropdown-item {
+.dropdown-menu a {
   display: block;
   padding: 0.5rem 1rem;
   text-decoration: none;
   color: #333;
-  transition: background-color 0.3s;
 }
 
-.dropdown-item:hover {
-  background-color: #f0f0f0;
+.dropdown-menu a:hover {
+  background-color: #f0f8ff;
+}
+
+.action-area {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .btn {
   padding: 0.5rem 1rem;
-  border: none;
+  border: 1px solid #3498db;
   border-radius: 4px;
   cursor: pointer;
-  margin-left: 0.5rem;
   font-size: 0.9rem;
+  transition: all 0.3s;
 }
 
-.btn-trial {
-  background-color: #42b983;
+.btn-outline {
+  background: transparent;
+  color: #3498db;
+}
+
+.btn-outline:hover {
+  background-color: #3498db;
   color: white;
 }
 
-.btn-pricing {
-  background-color: #34495e;
+.btn-gray {
+  background-color: #ccc;
   color: white;
+  border-color: #ccc;
 }
 
-.btn-login {
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
+.btn-gray:hover {
+  background-color: #bbb;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-wrap: wrap;
+    padding: 0.5rem 1rem;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none;
+  }
+
+  .nav-list.active {
+    display: flex;
+  }
+
+  .action-area {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    padding-top: 1rem;
+  }
 }
 </style>

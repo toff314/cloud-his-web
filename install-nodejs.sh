@@ -51,14 +51,42 @@ case "$OS" in
         echo -e "${YELLOW}Installing Node.js on CentOS/RHEL/Rocky/OpenCloudOS...${NC}"
         
         # Remove old Node.js if exists
-        sudo yum remove -y nodejs npm 2>/dev/null || true
+        if command -v dnf &> /dev/null; then
+            sudo dnf remove -y nodejs npm 2>/dev/null || true
+        else
+            sudo yum remove -y nodejs npm 2>/dev/null || true
+        fi
         
-        # Install Node.js 20.x from NodeSource
-        curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
-        sudo yum install -y nodejs
+        # Use binary installation for OpenCloudOS (universal method)
+        NODE_VERSION="20.11.1"
+        NODE_DIR="/usr/local/lib/nodejs"
+        
+        echo -e "${YELLOW}Downloading Node.js ${NODE_VERSION}...${NC}"
+        
+        # Create directory
+        sudo mkdir -p $NODE_DIR
+        
+        # Download and extract
+        cd /tmp
+        if [ "$(uname -m)" = "x86_64" ]; then
+            ARCH="x64"
+        else
+            ARCH=$(uname -m)
+        fi
+        
+        curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${ARCH}.tar.xz | sudo tar -xJ -C $NODE_DIR --strip-components=1
+        
+        # Create symlinks
+        sudo ln -sf $NODE_DIR/bin/node /usr/bin/node
+        sudo ln -sf $NODE_DIR/bin/npm /usr/bin/npm
+        sudo ln -sf $NODE_DIR/bin/npx /usr/bin/npx
         
         # Install build tools
-        sudo yum groupinstall -y "Development Tools"
+        if command -v dnf &> /dev/null; then
+            sudo dnf groupinstall -y "Development Tools" 2>/dev/null || true
+        else
+            sudo yum groupinstall -y "Development Tools" 2>/dev/null || true
+        fi
         
         # Allow npm to run as root
         sudo npm config set unsafe-perm true

@@ -1,120 +1,101 @@
-// ImageAsset service
 const ImageAsset = require('../models/image-asset.model');
-const { dbPath } = require('../config/database.config');
 
 class ImageAssetService {
-  constructor() {
-    this.imageAssetModel = new ImageAsset(dbPath);
+  // Get all image assets
+  async getAllImageAssets() {
+    return new Promise((resolve, reject) => {
+      const imageAssetModel = new ImageAsset();
+      
+      imageAssetModel.getAll((err, assets) => {
+        imageAssetModel.close();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(assets);
+        }
+      });
+    });
   }
 
   // Get image asset by ID
   async getImageAssetById(id) {
-    try {
-      const imageAsset = await this.imageAssetModel.getById(id);
-      if (!imageAsset) {
-        throw new Error('Image asset not found');
-      }
+    return new Promise((resolve, reject) => {
+      const imageAssetModel = new ImageAsset();
       
-      return imageAsset;
-    } catch (error) {
-      throw error;
-    }
+      imageAssetModel.getById(id, (err, asset) => {
+        imageAssetModel.close();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(asset);
+        }
+      });
+    });
   }
 
-  // Get image asset by filepath
-  async getImageAssetByFilepath(filepath) {
-    try {
-      const imageAsset = await this.imageAssetModel.getByFilepath(filepath);
-      if (!imageAsset) {
-        throw new Error('Image asset not found');
-      }
+  // Get image asset by filename
+  async getImageAssetByFilename(filename) {
+    return new Promise((resolve, reject) => {
+      const imageAssetModel = new ImageAsset();
       
-      return imageAsset;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  // Get all image assets
-  async getAllImageAssets(limit = 10, offset = 0) {
-    try {
-      const imageAssets = await this.imageAssetModel.getAll(limit, offset);
-      return imageAssets;
-    } catch (error) {
-      throw error;
-    }
+      imageAssetModel.getByFilename(filename, (err, asset) => {
+        imageAssetModel.close();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(asset);
+        }
+      });
+    });
   }
 
   // Create new image asset
-  async createImageAsset(imageData) {
-    try {
-      // Validate required fields
-      if (!imageData.filename || !imageData.filepath) {
-        throw new Error('Filename and filepath are required');
-      }
+  async createImageAsset(imageAssetData) {
+    return new Promise((resolve, reject) => {
+      const imageAssetModel = new ImageAsset();
       
-      // Check if image asset with this filepath already exists
-      try {
-        const existingAsset = await this.imageAssetModel.getByFilepath(imageData.filepath);
-        if (existingAsset) {
-          throw new Error('Image asset with this filepath already exists');
+      imageAssetModel.create(imageAssetData, (err, assetId) => {
+        imageAssetModel.close();
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ id: assetId });
         }
-      } catch (error) {
-        // If the error is not about the asset not existing, rethrow it
-        if (!error.message.includes('not found')) {
-          throw error;
-        }
-        // If the error is about the asset not existing, that's fine, continue
-      }
-      
-      const result = await this.imageAssetModel.create(imageData);
-      return { id: result.id, ...imageData };
-    } catch (error) {
-      throw error;
-    }
+      });
+    });
   }
 
   // Update image asset
-  async updateImageAsset(id, imageData) {
-    try {
-      // Check if image asset exists
-      const existingAsset = await this.imageAssetModel.getById(id);
-      if (!existingAsset) {
-        throw new Error('Image asset not found');
-      }
+  async updateImageAsset(id, imageAssetData) {
+    return new Promise((resolve, reject) => {
+      const imageAssetModel = new ImageAsset();
       
-      // If filepath is being updated, check if new filepath already exists
-      if (imageData.filepath && imageData.filepath !== existingAsset.filepath) {
-        try {
-          const filepathExists = await this.imageAssetModel.getByFilepath(imageData.filepath);
-          if (filepathExists) {
-            throw new Error('Image asset with this filepath already exists');
-          }
-        } catch (error) {
-          // If the error is not about the asset not existing, rethrow it
-          if (!error.message.includes('not found')) {
-            throw error;
-          }
-          // If the error is about the asset not existing, that's fine, continue
+      imageAssetModel.update(id, imageAssetData, (err) => {
+        imageAssetModel.close();
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ updated: true });
         }
-      }
-      
-      const result = await this.imageAssetModel.update(id, imageData);
-      return result;
-    } catch (error) {
-      throw error;
-    }
+      });
+    });
   }
 
   // Delete image asset
   async deleteImageAsset(id) {
-    try {
-      const result = await this.imageAssetModel.delete(id);
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    return new Promise((resolve, reject) => {
+      const imageAssetModel = new ImageAsset();
+      
+      imageAssetModel.delete(id, (err) => {
+        imageAssetModel.close();
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ deleted: true });
+        }
+      });
+    });
   }
 }
 
-module.exports = ImageAssetService;
+module.exports = new ImageAssetService();

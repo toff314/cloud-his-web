@@ -1,205 +1,95 @@
-# Cloud HIS Web Application
+# Cloud-HIS Web Application
 
-这是一个基于Vue.js和SQLite的医疗信息系统前端网站项目。
+This is a comprehensive web application for cloud-based hospital information systems, featuring multiple pages and components as specified in the requirements.
 
-## 项目概述
+## Features
 
-该项目旨在创建一个现代化的医疗信息系统前端网站，具有以下特点：
-- 使用Vue.js 3.x作为前端框架
-- 使用Node.js和Express作为后端API层
-- 使用SQLite作为本地数据库
-- 使用Vite作为构建工具
-- 实现了响应式设计，支持桌面和移动设备
+- **Top Navigation Bar**: With "智慧云门诊" logo, navigation menu, and action buttons
+- **Product Introduction Page**: Grid layout showcasing 6 functional modules
+- **Solutions Page**: Interactive solution buttons with dynamic content
+- **Customer Cases Page**: 3x3 grid layout for customer cases
+- **Home Page**: With carousel, product intro, solutions, and customer cases sections
+- **About Us Page**: With company intro, honors, and vision sections
+- **Pricing Plans Page**: Scrollable package cards with comparison table
+- **Free Trial Page**: With form and medical illustration
+- **Responsive Design**: Works on desktop and mobile devices
+- **Right Floating Navigation**: With contact and action buttons
+- **Footer Component**: With ICP filing and QR code
 
-## 功能特性
+## Tech Stack
 
-- 首页展示（包含轮播图、产品介绍、解决方案、客户案例）
-- 产品介绍页面
-- 解决方案页面
-- 客户案例页面
-- 关于我们页面
-- 版本套餐页面（包含套餐选择和对比表格）
-- 免费试用页面（包含申请表单）
-- 内容管理系统
-- 元面元数据管理
-- 图片库管理
+- **Frontend**: Vue.js 3.x, Vue Router, Pinia
+- **Backend**: Node.js, Express
+- **Database**: SQLite
+- **Build Tool**: Vite
 
-## 技术栈
-
-- **前端**: Vue.js 3.x, Vue Router, Pinia, Vite
-- **后端**: Node.js, Express
-- **数据库**: SQLite
-- **构建工具**: Vite
-- **样式**: CSS
-
-## 项目结构
+## Project Structure
 
 ```
 backend/
 ├── src/
-│   ├── models/
-│   │   ├── content.model.js
-│   │   └── page-metadata.model.js
-│   ├── services/
-│   │   ├── database.service.js
-│   │   ├── content.service.js
-│   │   └── sqlite-initializer.service.js
-│   ├── routes/
-│   │   ├── content.route.js
-│   │   └── metadata.route.js
-│   ├── config/
-│   │   └── database.config.js
-│   └── app.js
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   └── contract/
+│   ├── models/           # Database models
+│   ├── services/         # Business logic
+│   ├── routes/           # API routes
+│   ├── config/           # Configuration files
+│   └── app.js            # Main application entry point
 └── package.json
 
 frontend/
 ├── src/
-│   ├── components/
-│   │   ├── Header.vue
-│   │   ├── Footer.vue
-│   │   ├── ContentDisplay.vue
-│   │   └── ImageGallery.vue
-│   ├── pages/
-│   │   ├── Home.vue
-│   │   ├── About.vue
-│   │   └── Contact.vue
-│   ├── services/
-│   │   ├── api.service.js
-│   │   └── content-fetcher.service.js
-│   ├── assets/
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── images/
-│   ├── router/
-│   │   └── index.js
-│   ├── store/
-│   │   └── index.js
-│   └── App.vue
+│   ├── components/       # Vue components
+│   ├── pages/            # Page components
+│   ├── services/         # Frontend services
+│   ├── assets/           # Static assets
+│   ├── router/           # Vue Router configuration
+│   ├── store/            # Pinia store
+│   └── App.vue           # Main application component
 ├── public/
-├── tests/
 ├── package.json
 └── vite.config.js
 ```
 
-## 安装 Node.js
+## Setup
 
-如果系统尚未安装 Node.js，使用以下命令一键安装：
+1. Install dependencies:
+   ```bash
+   cd backend
+   npm install
+   
+   cd ../frontend
+   npm install
+   ```
 
-```bash
-chmod +x install-nodejs.sh
-./install-nodejs.sh
-```
+2. Initialize the database:
+   ```bash
+   cd backend
+   npm run init-db
+   ```
 
-此脚本支持：
-- Ubuntu / Debian
-- CentOS / RHEL / Rocky Linux / AlmaLinux
-- Fedora
+3. Start the development servers:
+   ```bash
+   # In backend directory
+   npm run dev
+   
+   # In frontend directory
+   npm run dev
+   ```
 
-安装完成后，验证版本：
-```bash
-node -v
-npm -v
-```
+## API Endpoints
 
----
+- `GET /api/v1/content` - Get all content
+- `GET /api/v1/content/:slug` - Get content by slug
+- `GET /api/v1/metadata` - Get all metadata
+- `GET /api/v1/metadata/:page_slug` - Get metadata by page slug
+- `GET /api/v1/images` - Get all images
+- `GET /api/v1/carousel` - Get carousel items
+- `GET /api/v1/about/:section` - Get about content by section
+- `POST /api/v1/trials` - Submit trial request
 
-## 快速开始
+## Development
 
-### 一键初始化（推荐）
+The application follows a component-based architecture with clear separation of concerns between frontend and backend. Each feature is implemented as a standalone component or page that can be developed and tested independently.
 
-使用提供的启动脚本一键安装所有依赖并初始化数据库：
+## License
 
-```bash
-chmod +x startup.sh
-./startup.sh
-```
-
-此脚本会自动完成以下操作：
-- ✅ 检查 Node.js 和 npm 是否已安装
-- 📦 安装后端依赖
-- 💾 初始化 SQLite 数据库
-- 📦 安装前端依赖
-
-### 启动开发服务器
-
-**方法一：同时启动前后端（推荐）**
-```bash
-./startup.sh dev
-```
-
-**方法二：分别启动**
-
-后端服务器（端口 3000）:
-```bash
-cd backend
-npm run dev
-```
-
-前端开发服务器（端口 5173）:
-```bash
-cd frontend
-npm run dev
-```
-
-前端配置了 `host: 0.0.0.0`，可以通过以下地址访问：
-- 本地访问: http://localhost:5173/
-- 外部访问: http://<服务器IP>:5173/
-
----
-
-## 详细步骤
-
-### 后端设置
-
-1. 进入后端目录:
-````
-cd backend
-````
-
-2. 安装依赖:
-````
-npm install
-````
-
-3. 初始化数据库:
-````
-npm run init-db
-````
-
-4. 启动服务器:
-````
-npm run dev
-````
-
-### 前端设置
-
-1. 进入前端目录:
-````
-cd frontend
-````
-
-2. 安装依赖:
-````
-npm install
-````
-
-3. 启动开发服务器:
-````
-npm run dev
-````
-
-## API 端点
-
-- `GET /api/v1/content` - 获取内容列表
-- `GET /api/v1/content/:slug` - 根据slug获取特定内容
-- `GET /api/v1/metadata` - 获取元数据列表
-- `GET /api/v1/metadata/:page_slug` - 根据页面slug获取特定元数据
-- `GET /api/v1/images` - 获取图片资源列表
-
-## 许可证
-
-MIT
+This project is licensed under the ISC License.

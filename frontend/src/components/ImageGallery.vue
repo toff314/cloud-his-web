@@ -1,29 +1,35 @@
 <template>
   <div class="image-gallery">
     <h2>图片库</h2>
+    
     <div class="gallery-grid">
       <div 
-        v-for="(image, index) in images" 
-        :key="index" 
+        v-for="image in images" 
+        :key="image.id" 
         class="gallery-item"
         @click="viewImage(image)"
       >
-        <img :src="image.filepath" :alt="image.alt_text" />
+        <img 
+          :src="image.filepath" 
+          :alt="image.alt_text || image.filename" 
+          :title="image.caption || image.filename"
+          class="gallery-image"
+        />
         <div class="image-info">
-          <h3>{{ image.filename }}</h3>
-          <p>{{ image.caption }}</p>
+          <p class="image-name">{{ image.filename }}</p>
+          <p class="image-caption" v-if="image.caption">{{ image.caption }}</p>
         </div>
       </div>
     </div>
     
-    <!-- Image Preview Modal -->
-    <div v-if="selectedImage" class="modal" @click="closeModal">
+    <!-- Image Viewer Modal -->
+    <div v-if="selectedImage" class="modal-overlay" @click="closeViewer">
       <div class="modal-content" @click.stop>
-        <span class="close" @click="closeModal">&times;</span>
+        <button class="close-btn" @click="closeViewer">&times;</button>
         <img :src="selectedImage.filepath" :alt="selectedImage.alt_text" class="modal-image" />
         <div class="modal-info">
           <h3>{{ selectedImage.filename }}</h3>
-          <p>{{ selectedImage.caption }}</p>
+          <p v-if="selectedImage.caption">{{ selectedImage.caption }}</p>
           <p>文件大小: {{ formatFileSize(selectedImage.file_size) }}</p>
           <p>MIME类型: {{ selectedImage.mime_type }}</p>
         </div>
@@ -33,14 +39,15 @@
 </template>
 
 <script>
-import { contentFetcherService } from '../services/content-fetcher.service';
+import api from '../services/api.service';
 
 export default {
   name: 'ImageGallery',
   data() {
     return {
       images: [],
-      selectedImage: null
+      selectedImage: null,
+      loading: true
     };
   },
   async mounted() {
@@ -49,47 +56,24 @@ export default {
   methods: {
     async loadImages() {
       try {
-        // 在实际应用中，这里应该调用获取图片资产的API
-        // 由于尚未实现后端图片API，暂时使用模拟数据
-        this.images = [
-          {
-            id: 1,
-            filename: 'company-image.jpg',
-            filepath: '../assets/images/company-image.jpg',
-            alt_text: '公司形象图',
-            caption: '公司办公环境',
-            file_size: 102400,
-            mime_type: 'image/jpeg'
-          },
-          {
-            id: 2,
-            filename: 'medical-scene.jpg',
-            filepath: '../assets/images/medical-scene.jpg',
-            alt_text: '医疗场景插画',
-            caption: '医疗场景插画',
-            file_size: 204800,
-            mime_type: 'image/jpeg'
-          },
-          {
-            id: 3,
-            filename: 'carousel1.jpg',
-            filepath: '../assets/images/carousel1.jpg',
-            alt_text: '智慧云门诊解决方案',
-            caption: '智慧云门诊解决方案',
-            file_size: 153600,
-            mime_type: 'image/jpeg'
-          }
-        ];
+        this.loading = true;
+        const response = await api.get('/images'); // Assuming we have this endpoint
+        this.images = response.data;
       } catch (error) {
         console.error('Error loading images:', error);
-        // 使用默认图片集
-        this.images = [];
+        // For demo purposes, we'll create some placeholder images
+        this.images = [
+          { id: 1, filename: 'placeholder1.jpg', filepath: '/src/assets/images/placeholder.png', alt_text: 'Placeholder 1', caption: '这是一个占位图片', file_size: 1024, mime_type: 'image/png' },
+          { id: 2, filename: 'placeholder2.jpg', filepath: '/src/assets/images/placeholder.png', alt_text: 'Placeholder 2', caption: '这是另一个占位图片', file_size: 2048, mime_type: 'image/png' }
+        ];
+      } finally {
+        this.loading = false;
       }
     },
     viewImage(image) {
       this.selectedImage = image;
     },
-    closeModal() {
+    closeViewer() {
       this.selectedImage = null;
     },
     formatFileSize(bytes) {
@@ -114,6 +98,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .gallery-item {
@@ -121,91 +106,90 @@ export default {
   border: 1px solid #eee;
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .gallery-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.gallery-item img {
+.gallery-image {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  display: block;
 }
 
 .image-info {
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
-.image-info h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
+.image-name {
+  font-weight: bold;
+  margin: 0 0 0.25rem 0;
   color: #2c3e50;
 }
 
-.image-info p {
+.image-caption {
   margin: 0;
+  color: #7f8c8d;
   font-size: 0.9rem;
-  color: #666;
 }
 
 /* Modal Styles */
-.modal {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
-  background-color: white;
+  position: relative;
   max-width: 90%;
   max-height: 90%;
+  background-color: white;
   border-radius: 8px;
-  overflow: auto;
-  position: relative;
-  text-align: center;
+  overflow: hidden;
+  padding: 1rem;
 }
 
-.close {
+.close-btn {
   position: absolute;
-  top: 15px;
-  right: 25px;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
   color: white;
-  font-size: 35px;
-  font-weight: bold;
   cursor: pointer;
-  z-index: 2001;
-  background-color: #333;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  z-index: 1001;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.close:hover {
-  color: #ddd;
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 50%;
 }
 
 .modal-image {
   max-width: 100%;
   max-height: 70vh;
-  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .modal-info {
-  padding: 1.5rem;
-  text-align: left;
+  margin-top: 1rem;
+  text-align: center;
 }
 
 .modal-info h3 {
@@ -214,7 +198,7 @@ export default {
 }
 
 .modal-info p {
-  margin: 0.5rem 0;
-  color: #666;
+  margin: 0.25rem 0;
+  color: #7f8c8d;
 }
 </style>
