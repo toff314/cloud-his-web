@@ -1,0 +1,24 @@
+{
+  "name": "cloud-his-web-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for cloud-his-web project",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "vue": "^3.2.47",
+    "vue-router": "^4.1.6",
+    "pinia": "^2.0.33"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite": "^4.1.4",
+    "vitest": "^0.29.1"
+  },
+  "keywords": ["vue", "vite", "pinia"],
+  "author": "",
+  "license": "ISC"
+}
