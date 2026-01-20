@@ -85,6 +85,28 @@ frontend/
 └── vite.config.js
 ```
 
+## 安装 Node.js
+
+如果系统尚未安装 Node.js，使用以下命令一键安装：
+
+```bash
+chmod +x install-nodejs.sh
+./install-nodejs.sh
+```
+
+此脚本支持：
+- Ubuntu / Debian
+- CentOS / RHEL / Rocky Linux / AlmaLinux
+- Fedora
+
+安装完成后，验证版本：
+```bash
+node -v
+npm -v
+```
+
+---
+
 ## 快速开始
 
 ### 一键初始化（推荐）
