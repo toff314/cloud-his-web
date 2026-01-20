@@ -47,8 +47,8 @@ case "$OS" in
         sudo npm config set unsafe-perm true
         ;;
         
-    centos|rhel|rocky|almalinux)
-        echo -e "${YELLOW}Installing Node.js on CentOS/RHEL/Rocky...${NC}"
+    centos|rhel|rocky|almalinux|opencloudos)
+        echo -e "${YELLOW}Installing Node.js on CentOS/RHEL/Rocky/OpenCloudOS...${NC}"
         
         # Remove old Node.js if exists
         sudo yum remove -y nodejs npm 2>/dev/null || true
